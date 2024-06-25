@@ -16,11 +16,16 @@ function main(){
 };
 
 function showUserProfile(){
-    if(isInLIFF){
-        liff.getProfile().then(function(userProfile){
-            txtResult.value = userProfile.displayName;
-        });
-    } else {
-        console.log("not in LIFF");
+    txtResult.value = "";
+    try {
+        if(isInLIFF){
+            liff.getProfile().then(function(userProfile){
+                txtResult.value = userProfile.displayName;
+            });
+        } else {
+            txtResult.value = "isInLIFF==false";
+        }
+    } catch (ex) {
+        txtResult.value = ex;
     }
 };

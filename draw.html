@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Draw</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="procustomizer.css"/>
+        <style>
+            * {
+                margin: 0px;
+            }
+            body{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                overflow: hidden;
+            }
+            .navbar {
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                height: 1.5em;
+                background-color: bisque;
+            }
+            #btnGoBack {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                right: 70%;
+                bottom: 0px;
+                text-align: center;
+            }
+            #btnPlaceOrder{
+                position: absolute;
+                top: 0px;
+                left: 30%;
+                right: 0px;
+                bottom: 0px;
+                text-align: center;
+            }
+            #proCustomizer{
+                position: absolute;
+                top: 1.5em;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+            }
+            @media screen and (max-height:375px) {
+                .navbar {
+                    height: 1.5em;
+                }
+                #proCustomizer{
+                    position: absolute;
+                    top: 1.5em;
+                }
+            }
+            #frmConfirm{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                overflow: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navbar" class="navbar">
+            <div id="btnGoBack" onclick="history.back()">返回</div>
+            <div id="btnPlaceOrder" onclick="getResult()">送出訂單</div>
+        </div>
+        <div id="proCustomizer"></div>
+
+        <form id="frmConfirm" action="checkOut.html" readonly hidden>
+            <img id="imgCheckOut" style="width: 512px;"/>
+            <br/>
+            <label>尺寸：
+                <select name="Size" autocomplete="off" readonly>
+                    <option>S</option>
+                    <option selected>M</option>
+                    <option>L</option>
+                </select>
+            </label>
+            <br/>
+            <label>厚度：
+                <label for="cbIsStandard">
+                    <input name="IsThicker" id="cbIsStandard" type="radio" value="false" checked="checked" autocomplete="off" readonly/>
+                    標準
+                </label>
+                <label for="cbIsThicker">
+                    <input name="IsThicker" id="cbIsThicker" type="radio" value="true" autocomplete="off" readonly/>
+                    加厚
+                </label> 
+            </label>
+            <br/>
+            <label>底色：
+                <label for="cbWhite">
+                    <input name="BgColor" id="cbWhite" type="radio" value="white" checked="checked" autocomplete="off" readonly/>
+                    白
+                </label>
+                <label for="cbRed">
+                    <input name="BgColor" id="cbRed" type="radio" value="red" autocomplete="off" readonly/>
+                    紅
+                </label> 
+                <label for="cbGreen">
+                    <input name="BgColor" id="cbGreen" type="radio" value="green" autocomplete="off" readonly/>
+                    綠
+                </label> 
+                <label for="cbBlue">
+                    <input name="BgColor" id="cbBlue" type="radio" value="blue" autocomplete="off" readonly/>
+                    藍
+                </label> 
+            </label>
+            <br/>
+            <label>數量：
+                <input type="number" name="Quantity" value="1" min="1" autocomplete="off" readonly/>
+            </label>
+            <br/>
+            <label>Email：
+                <input type="text" name="Email" autocomplete="off" readonly/>
+            </label>
+            <input type="text" name="OrderNumber" autocomplete="off" readonly/>
+            <br/>
+            <button type="button" onclick="sendOrder(frmConfirm)">送出訂單</button>
+            <button type="button" onclick="hideFrmConfirm()">取消</button>
+        </form>
+
+        <script src="procustomizer.js"></script>
+        <script src="googleDrive.js"></script>
+        <script src="brevo.js"></script>
+        <script src="sdk.js"></script>
+        <script>
+            const proCustomizer3D = new ProCustomizer3D();
+            proCustomizer3D.mountAsync("#proCustomizer", 1024, 576).then(async function(){
+                await proCustomizer3D.loadProductGltfAsync("/assets/mouthguard.gltf", "Front", "/assets/mouthguard_uv_invert_1024x576.png");
+            });
+            function getResult(){
+                proCustomizer3D.getCanvasPicture();
+            };
+            proCustomizer3D.onGetCanvasPicture = function(pic){
+                document.querySelectorAll("#navbar,#proCustomizer").forEach(function(el){
+                    el.style.display = "none";
+                });
+                document.querySelectorAll("#frmConfirm").forEach(function(el){
+                    el.style.display = "block";
+                });
+                document.querySelectorAll("input[type='radio']").forEach(/** @param {HTMLInputElement} inp*/ function(inp){
+                    inp.disabled = false;
+                });
+                /** @type {HTMLImageElement} */
+                let imgCheckOut = document.querySelector("#imgCheckOut");
+                imgCheckOut.src = pic;
+                const urlParams = new URLSearchParams(window.location.search);
+                document.querySelectorAll("#frmConfirm input, #frmConfirm select").forEach(
+                /** @param {HTMLInputElement} inp */
+                function(inp){
+                    let name = inp.name;
+                    if(name == "IsThicker"){
+                        if(urlParams.get("IsThicker") == "true"){
+                            if(inp.value == "true"){
+                                inp.checked = true;
+                            }
+                        }
+                    } else if(name == "BgColor"){
+                        if(inp.value == urlParams.get("BgColor")){
+                            inp.checked = true;
+                        }
+                    } else {
+                        inp.value = urlParams.get(name);
+                    }
+                });
+                document.querySelectorAll("input[type='radio']").forEach(/** @param {HTMLInputElement} inp*/ function(inp){
+                    if(!inp.checked){
+                        inp.disabled = true;
+                    }
+                });
+            };
+            function hideFrmConfirm(){
+                document.querySelectorAll("#navbar,#proCustomizer").forEach(function(el){
+                    el.style.display = "block";
+                });
+                document.querySelectorAll("#frmConfirm").forEach(function(el){
+                    el.style.display = "none";
+                });
+            };
+            /** @param {HTMLFormElement} frmConfirm*/
+            function sendOrder(frmConfirm){
+                const urlParams = new URLSearchParams(window.location.search);
+                let uuid = ProCustomizer3D.uuidv4();
+                let res = null;
+                let task = new Promise(function(onDone){
+                    proCustomizer3D.onPlaceOrder = async function(gltfJson){                    
+                        res = await googleDrive.uploadFileAsync(new Blob([JSON.stringify(gltfJson)]), uuid + ".gltf");
+                        onDone();
+                    };
+                    proCustomizer3D.placeOrder();
+                });
+                task = task.then(async function(){
+                    if(res){
+                        let subject = "訂單";
+                        let sender = {email:"msit130foodma@gmail.com", name:"ShockDefense客服"};
+                        let to = [{email:"boychen@top-team.com.tw",name:"ShockDefense客服"},{email:urlParams.get("Email"),name:urlParams.get("Email").split("@")[0]}];
+                        let htmlContent = "<h1>" +  urlParams.toString() + "</h1>" + `<h2>${uuid}</h2>`;
+                        res = await brevo.sendEmailAsync(subject, sender, to, htmlContent);
+                    } else {
+                        alert("錯誤");
+                    }
+                });
+
+                task = task.then(async function(){
+                    await liff.init({
+                        liffId: "2005691529-5yxwlPkP",
+                    });
+                    if(liff.isInClient()){
+                        let msgs = [
+                            {
+                                type: "text",
+                                text: `${uuid}`,
+                            },
+                            {
+                                type: "text",
+                                text: urlParams.toString(),
+                            },
+                        ];
+                        await liff.sendMessages(msgs);
+                    } else {
+                        alert("not in client");
+                    }
+                });
+
+                task = task.then(async function(){
+                    if(res){
+                        let txtOrderNumber = frmConfirm.querySelector("input[name='OrderNumber']");
+                        txtOrderNumber.value = uuid;
+                        frmConfirm.submit();
+                    } else {
+                        alert("錯誤");
+                    }
+                });
+            };
+        </script>
+    </body>
+</html>

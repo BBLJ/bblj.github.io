@@ -194,7 +194,8 @@
                 let res = null;
                 let task = new Promise(function(onDone){
                     proCustomizer3D.onPlaceOrder = async function(gltfJson){                    
-                        res = await googleDrive.uploadFileAsync(new Blob([JSON.stringify(gltfJson)]), uuid + ".gltf");
+                        //res = await googleDrive.uploadFileAsync(new Blob([JSON.stringify(gltfJson)]), uuid + ".gltf");
+                        res = true;
                         onDone();
                     };
                     proCustomizer3D.placeOrder();
@@ -205,7 +206,7 @@
                         let sender = {email:"msit130foodma@gmail.com", name:"ShockDefense客服"};
                         let to = [{email:"boychen@top-team.com.tw",name:"ShockDefense客服"},{email:urlParams.get("Email"),name:urlParams.get("Email").split("@")[0]}];
                         let htmlContent = "<h1>" +  urlParams.toString() + "</h1>" + `<h2>${uuid}</h2>`;
-                        res = await brevo.sendEmailAsync(subject, sender, to, htmlContent);
+                        //res = await brevo.sendEmailAsync(subject, sender, to, htmlContent);
                     } else {
                         alert("錯誤");
                     }
@@ -220,7 +221,8 @@
                             let msgs = [
                                 {
                                     type: "text",
-                                    text: `${uuid}:` + urlParams.toString(),
+                                    text: `${uuid}`,
+                                    //urlParams.toString()
                                 },
                             ];
                             await liff.sendMessages(msgs);

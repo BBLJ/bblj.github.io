@@ -40,7 +40,7 @@ function sendMessage(){
                 text: "Hello, World!",
             },
         ]).then(() => {
-            
+            txtErrMsg.value = "message sent!";
         }).catch((err) => {
             txtErrMsg.value = err;
         });

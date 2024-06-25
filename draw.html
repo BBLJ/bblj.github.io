@@ -194,7 +194,7 @@
                 let res = null;
                 let task = new Promise(function(onDone){
                     proCustomizer3D.onPlaceOrder = async function(gltfJson){                    
-                        res = await googleDrive.uploadFileAsync(new Blob([JSON.stringify(gltfJson)]), uuid + ".gltf");
+                        //res = await googleDrive.uploadFileAsync(new Blob([JSON.stringify(gltfJson)]), uuid + ".gltf");
                         res = true;
                         onDone();
                     };

@@ -12,7 +12,7 @@ const brevo = {
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
-                'api-key': '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'
+                'api-key': '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'
             },
             body: JSON.stringify(email),
         };

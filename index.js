@@ -17,8 +17,9 @@ function main(){
 
 function showUserProfile(){
     if(isInLIFF){
-        let userProfile = liff.getProfile();
-        console.log(userProfile);
+        liff.getProfile().then(function(userProfile){
+            txtResult.value = userProfile.displayName;
+        });
     } else {
         console.log("not in LIFF");
     }

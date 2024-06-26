@@ -1960,7 +1960,6 @@ class Product3DPreviewer {
                         this.#viewModel.camera.translateZ(0.2);
                     }
                 }
-                document.getElementById("display").innerHTML = `${zoom},`;
             }
             this.#beginTouch.x0 = te.touches[0].clientX;
             this.#beginTouch.y0 = te.touches[0].clientY;

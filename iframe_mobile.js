@@ -131,14 +131,17 @@ const editor = {
                 }
             }
         });
-        window.addEventListener("touchmove", function(ev){
+        viewModel.canvas.addEventListener("touchmove", function(ev){
+            
             if(viewModel.isMovingCurrentLayer){
                 let vec = {
                     x: ev.touches[0].clientX - viewModel.beginTouch.x0,
                     y: ev.touches[0].clientY - viewModel.beginTouch.y0,
                 };
-                viewModel.currentLayer.position.x += vec.x;
-                viewModel.currentLayer.position.y += vec.y;
+                let rw = (viewModel.canvas.width / viewModel.canvas.clientWidth);
+                let rh = (viewModel.canvas.height / viewModel.canvas.clientHeight);
+                viewModel.currentLayer.position.x += vec.x * rw;
+                viewModel.currentLayer.position.y += vec.y * rh;
                 viewModel.beginTouch.x0 = ev.touches[0].clientX;
                 viewModel.beginTouch.y0 = ev.touches[0].clientY;
             } else if(viewModel.isRoscaling){

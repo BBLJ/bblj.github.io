@@ -241,7 +241,9 @@ const editor = {
         document.getElementById("rotaterWrapper").style.display = "none";
     },
     sticker: function(){
+        /** @type {HTMLInputElement} */
         let btnChangeSticker = document.getElementById("btnChangeSticker");
+        btnChangeSticker.value = null;
         btnChangeSticker.click();
     },
     /** @param {HTMLInputElement} btnChangeSticker */
